@@ -19,21 +19,16 @@ struct Varyings
 
 float3 GetShadowPositionWS(float3 positionOS, float offset)
 {
-    float3 positionWS = TransformObjectToWorld(positionOS.xyz);
-    
     float3 shadowProjDir = _MainLightPosition.xyz;
-
     float3 planePositionWS = _ShadowPlanePosition.xyz;
     float3 planeNormalWS = _ShadowPlaneNormal.xyz;
-    float normalBias = _ShadowPlaneNormal.w;
-
+    
+    float3 positionWS = TransformObjectToWorld(positionOS.xyz);
     planePositionWS += offset * planeNormalWS;
     
     float d1 = dot(shadowProjDir, planeNormalWS);
     float d2 = dot(planePositionWS - positionWS, planeNormalWS);
-    positionWS = positionWS + shadowProjDir * (d2 /d1);
-    
-    return planeNormalWS * normalBias.xxx + positionWS;
+    return positionWS + shadowProjDir * (d2 /d1);
 }
 
 half GetShadowFade(float3 positionWS)
@@ -55,7 +50,7 @@ float GetHeight(float3 positionWS)
 #if defined(_HEIGHTMAP)
     float2 uv = positionWS.xz * _HeightMap_ST.xy + _HeightMap_ST.zw;
     float height = _HeightMap.SampleLevel(sampler_HeightMap, uv, 0).x;
-    return height * 0.5;
+    return height * _MaxHeight;
     /*
     if (height > 0.75) offset += 0.5;
     else if (height > 0.7) offset += 0.25;
@@ -74,7 +69,7 @@ float3 ApplyHeightOffset(float3 pos, float offset)
 #else
     float3 dir = _MainLightPosition.xyz;
     float3 finalOffset = float3(0.0, offset, 0.0);
-    finalOffset += _ProjectDirXZScale * float3(dir.x, 0, dir.z);
+    finalOffset += _HorizontalBias * float3(dir.x, 0, dir.z);
     return pos + finalOffset;
 #endif
 }

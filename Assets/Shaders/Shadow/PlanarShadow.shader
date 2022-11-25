@@ -3,16 +3,16 @@ Shader "Picoverse/PlanarShadow"
     Properties
     {
         _ShadowColor("Shadow Color", Color) = (0, 0, 0, 1)
-        _ShadowPlaneNormal("Shadow Plane Normal(xyz), Bias(w)", Vector) = (0, 1, 0, 0)
+        _ShadowPlaneNormal("Shadow Plane Normal(xyz)", Vector) = (0, 1, 0, 0)
         _ShadowPlanePosition("Shadow Plane Position(xyz)", Vector) = (0, 0, 0, 0)
         _ShadowFadeScale("Shadow Fade Scale", Float) = 0
         
         [Toggle(_HEIGHTMAP)]  _EnableHeightMap("Enable Height", Float) = 0
         _HeightMap("Height Map", 2D) = "black" {}
-        _MaxHeight("Max Height", Range(0, 10)) = 1.0
+        _MaxHeight("Max Height", Range(0, 10)) = 0.5
         
         [Toggle(_VERTICALOFFSET)]  _VerticalOffset("Vertical Offset", Float) = 0
-        _ProjectDirXZScale("_ProjectDirXZScale", Range(0.0, 4.0)) = 0
+        _HorizontalBias("Horizontal Bias", Range(0.0, 4.0)) = 0
         
         _ShadowStencil("Planar Shadow Stencil Value", Float) = 15
     }
@@ -58,7 +58,8 @@ Shader "Picoverse/PlanarShadow"
                 float4 _ShadowPlaneNormal;
                 float4 _ShadowPlanePosition;
                 float _ShadowFadeScale;
-                float _ProjectDirXZScale;
+                float _HorizontalBias;
+                float _MaxHeight;
             CBUFFER_END
 
             //float4 _MainLightPosition;
